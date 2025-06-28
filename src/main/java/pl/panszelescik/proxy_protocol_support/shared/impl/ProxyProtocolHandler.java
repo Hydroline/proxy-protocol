@@ -153,7 +153,9 @@ public class ProxyProtocolHandler extends ChannelInboundHandlerAdapter {
                     }
                     ((ProxyProtocolAddressSetter) connection).setAddress(socketAddr);
                     
-                    ProxyProtocolSupport.infoLogger.accept("[代理协议] 代理连接已建立 - 真实IP: " + realAddress + ":" + realPort + " | 代理: " + proxyAddress);
+                    if (ProxyProtocolSupport.debugMode) {
+                        ProxyProtocolSupport.infoLogger.accept("[代理协议] 代理连接已建立 - 真实IP: " + realAddress + ":" + realPort + " | 代理: " + proxyAddress);
+                    }
                 } else if (ProxyProtocolSupport.debugMode) {
                     System.out.println("[代理协议] 收到LOCAL命令，跳过地址覆盖");
                     ProxyProtocolSupport.infoLogger.accept("[代理协议] 收到LOCAL命令，跳过地址覆盖");

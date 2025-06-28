@@ -64,16 +64,18 @@ public class ProxyProtocolSupport {
         }
 
         if (!config.enableProxyProtocol) {
-            ProxyProtocolSupport.infoLogger.accept("[代理协议] 代理协议在配置中已禁用");
             if (config.debugMode) {
+                ProxyProtocolSupport.infoLogger.accept("[代理协议] 代理协议在配置中已禁用");
                 System.out.println("=== [代理协议] 代理协议已禁用 ===");
             }
             return;
         }
         
-        ProxyProtocolSupport.infoLogger.accept("[代理协议] 代理协议已启用 - 混合模式: " + config.allowDirectConnections + 
-                                                ", 白名单模式: " + config.whitelistMode + 
-                                                ", 调试模式: " + config.debugMode);
+        if (config.debugMode) {
+            ProxyProtocolSupport.infoLogger.accept("[代理协议] 代理协议已启用 - 混合模式: " + config.allowDirectConnections + 
+                                                    ", 白名单模式: " + config.whitelistMode + 
+                                                    ", 调试模式: " + config.debugMode);
+        }
 
         if (config.debugMode) {
             System.out.println("=== [代理协议] 代理协议已启用 ===");
@@ -102,8 +104,8 @@ public class ProxyProtocolSupport {
         if (config.whitelistTCPShieldServers) {
             if (config.debugMode) {
                 System.out.println("[代理协议] 正在处理TCPShield集成...");
+                ProxyProtocolSupport.infoLogger.accept("[代理协议] TCPShield集成已启用");
             }
-            ProxyProtocolSupport.infoLogger.accept("[代理协议] TCPShield集成已启用");
             whitelistedIPs.addAll(Stream
                     .concat(whitelistedIPs.stream(), TCPShieldIntegration.getWhitelistedIPs().stream())
                     .collect(Collectors.toSet()));
@@ -114,9 +116,8 @@ public class ProxyProtocolSupport {
             System.out.println("[代理协议] TCPShield集成已禁用");
         }
 
-        ProxyProtocolSupport.infoLogger.accept("[代理协议] 配置加载成功，包含 " + ProxyProtocolSupport.whitelistedIPs.size() + " 个白名单IP");
-        
         if (config.debugMode) {
+            ProxyProtocolSupport.infoLogger.accept("[代理协议] 配置加载成功，包含 " + ProxyProtocolSupport.whitelistedIPs.size() + " 个白名单IP");
             System.out.println("[代理协议] 最终白名单IP数量: " + ProxyProtocolSupport.whitelistedIPs.size());
             ProxyProtocolSupport.infoLogger.accept("[代理协议] 使用 " + ProxyProtocolSupport.whitelistedIPs.size() + " 个白名单IP: " + ProxyProtocolSupport.whitelistedIPs);
             System.out.println("[代理协议] 代理协议配置完成！");
