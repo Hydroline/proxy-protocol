@@ -3,6 +3,7 @@ package pl.panszelescik.proxy_protocol_support.shared.config;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,11 +15,23 @@ import java.util.List;
 public class Config {
 
     @SerializedName("enable-proxy-protocol")
-    public boolean enableProxyProtocol = true;
+    public boolean enableProxyProtocol = false;
 
     @SerializedName("proxy-protocol-whitelisted-ips")
-    public List<String> whitelistedIPs = new ArrayList<>();
+    public List<String> whitelistedIPs = new ArrayList<>(Arrays.asList(
+        "127.0.0.1/32",     // localhost IPv4
+        "::1/128"           // localhost IPv6
+    ));
 
     @SerializedName("whitelistTCPShieldServers")
     public boolean whitelistTCPShieldServers = false;
+    
+    @SerializedName("allow-direct-connections")
+    public boolean allowDirectConnections = true;
+    
+    @SerializedName("whitelist-mode")
+    public boolean whitelistMode = false;
+    
+    @SerializedName("debug-mode")
+    public boolean debugMode = false;
 }

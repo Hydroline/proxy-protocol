@@ -23,7 +23,9 @@ public class Configuration {
         final File file = new File(configDir, ProxyProtocolSupport.MODID + ".json");
 
         if (file.exists()) {
-            return saveConfig(file, loadConfigFile(file));
+            Config loadedConfig = loadConfigFile(file);
+            Config savedConfig = saveConfig(file, loadedConfig);
+            return savedConfig;
         }
 
         return saveDefaultConfig(file);
@@ -31,19 +33,18 @@ public class Configuration {
 
     private static Config loadConfigFile(File configFile) throws IOException {
         final String string = FileUtils.readFileToString(configFile, StandardCharsets.UTF_8);
-
-        return GSON.fromJson(string, Config.class);
+        Config config = GSON.fromJson(string, Config.class);
+        return config;
     }
 
     private static Config saveDefaultConfig(File configFile) throws IOException {
-        return saveConfig(configFile, new Config());
+        Config defaultConfig = new Config();
+        return saveConfig(configFile, defaultConfig);
     }
 
     private static Config saveConfig(File configFile, Config config) throws IOException {
         final String string = GSON.toJson(config);
-
         FileUtils.writeStringToFile(configFile, string, StandardCharsets.UTF_8);
-
         return config;
     }
 }

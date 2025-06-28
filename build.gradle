@@ -1,36 +1,31 @@
 buildscript {
     repositories {
+        maven { url = 'https://maven.aliyun.com/repository/public/' }
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         mavenCentral()
     }
     dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 
-plugins {
-    id 'net.minecraftforge.gradle' version '5.+'
-    id 'com.github.johnrengelman.shadow' version '7.+'
-    id 'java'
-}
-
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'pl.panszelescik'
-version = '1.1.0-forge'
+version = '1.2.0-forge-1.16.5'
 
-java {
-    archivesBaseName = 'proxy_protocol_support'
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
-}
+archivesBaseName = 'proxy_protocol_support'
 
-configurations {
-    shade
-    implementation.extendsFrom shade
-}
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+
 
 minecraft {
-    mappings channel: 'official', version: '1.19.4'
+    mappings channel: 'official', version: '1.16.5'
 
     runs {
         client {
@@ -109,44 +104,38 @@ mixin {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    // 优先使用已经工作的源
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    maven { url = 'https://files.minecraftforge.net/maven' }
+    maven { url = 'https://maven.minecraftforge.net/' }
+    
+    // 原始源
+    mavenCentral()
+    
+    // 腾讯云镜像（兼容性更好）
+    maven { url = 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.4-45.0.49'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
 
     implementation('io.netty:netty-codec-haproxy:4.1.91.Final')
-    shade('io.netty:netty-codec-haproxy:4.1.91.Final') {
-        exclude group: '*', module: '*'
-    }
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 jar {
-    archiveClassifier = 'slim'
     manifest {
         attributes([
                 "Specification-Title"     : "proxy_protocol_support",
                 "Specification-Vendor"    : "PanSzelescik",
-                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Specification-Version"   : "1",
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Version"  : "${version}",
                 "Implementation-Vendor"   : "PanSzelescik",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
-}
-
-shadowJar {
-    archiveClassifier = ''
-    configurations = [project.configurations.shade]
-    finalizedBy 'reobfShadowJar'
-}
-
-assemble.dependsOn shadowJar
-
-reobf {
-    shadowJar {}
 }
 
 jar.finalizedBy('reobfJar')

@@ -35,7 +35,7 @@ public class CIDRMatcher {
         try {
             cidrAddress = InetAddress.getByName(parsedIPAddress);
         } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to resolve IP/domain: " + parsedIPAddress, e);
         }
     }
 
