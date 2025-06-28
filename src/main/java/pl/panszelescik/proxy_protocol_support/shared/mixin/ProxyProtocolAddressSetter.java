@@ -1,6 +1,6 @@
 package pl.panszelescik.proxy_protocol_support.shared.mixin;
 
-import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Connection;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -12,7 +12,7 @@ import java.net.SocketAddress;
  * @author PanSzelescik
  * @see net.minecraft.network.Connection#address
  */
-@Mixin(NetworkManager.class)
+@Mixin(Connection.class)
 public interface ProxyProtocolAddressSetter {
 
     @Accessor

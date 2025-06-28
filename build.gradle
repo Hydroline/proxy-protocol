@@ -1,11 +1,12 @@
 buildscript {
     repositories {
-        maven { url = 'https://maven.aliyun.com/repository/public/' }
+        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
+        maven { url = 'https://maven.minecraftforge.net' }
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
@@ -16,16 +17,16 @@ apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'pl.panszelescik'
-version = '1.2.0-forge-1.16.5'
+version = '1.2.0-forge-1.18.2'
 
 archivesBaseName = 'proxy_protocol_support'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaVersion.VERSION_17
 
 
 
 minecraft {
-    mappings channel: 'official', version: '1.16.5'
+    mappings channel: 'official', version: '1.18.2'
 
     runs {
         client {
@@ -104,20 +105,18 @@ mixin {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // 优先使用已经工作的源
-    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-    maven { url = 'https://files.minecraftforge.net/maven' }
-    maven { url = 'https://maven.minecraftforge.net/' }
-    
-    // 原始源
-    mavenCentral()
-    
-    // 腾讯云镜像（兼容性更好）
-    maven { url = 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+    // Put repositories for dependencies here
+    // ForgeGradle automatically adds the Forge maven and Maven Central for you
+
+    // Most mods will only need this if they use Mixins or depend on mods that use Mixins
+    maven { 
+        name = 'SpongePowered'
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.3.0'
 
     implementation('io.netty:netty-codec-haproxy:4.1.91.Final')
 

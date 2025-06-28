@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.haproxy.HAProxyCommand;
 import io.netty.handler.codec.haproxy.HAProxyMessage;
-import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Connection;
 import pl.panszelescik.proxy_protocol_support.shared.ProxyProtocolSupport;
 import pl.panszelescik.proxy_protocol_support.shared.config.CIDRMatcher;
 import pl.panszelescik.proxy_protocol_support.shared.mixin.ProxyProtocolAddressSetter;
@@ -78,7 +78,7 @@ public class ProxyProtocolHandler extends ChannelInboundHandlerAdapter {
                     if (ProxyProtocolSupport.debugMode) {
                         ProxyProtocolSupport.infoLogger.accept("[代理协议] 在管道中查找NetworkManager...");
                     }
-                    NetworkManager connection = ((NetworkManager) ctx.channel().pipeline().get("packet_handler"));
+                    Connection connection = ((Connection) ctx.channel().pipeline().get("packet_handler"));
                     if (connection == null) {
                         ProxyProtocolSupport.warnLogger.accept("[代理协议] 错误: 在管道中未找到NetworkManager!");
                         if (ProxyProtocolSupport.debugMode) {
