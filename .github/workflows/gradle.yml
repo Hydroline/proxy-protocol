@@ -38,6 +38,8 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.java.home=$JAVA_HOME"
       - name: Upload JAR artifacts
         uses: actions/upload-artifact@v4
         with:
