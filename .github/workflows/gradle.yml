@@ -39,12 +39,15 @@ jobs:
           if [ -d ~/.gradle/caches/forge_gradle ]; then
             rm -rf ~/.gradle/caches/forge_gradle
           fi
+          if [ -d ~/.gradle/caches/minecraft ]; then
+            rm -rf ~/.gradle/caches/minecraft
+          fi
       - name: Build with Gradle (with retry)
         run: |
           # Try building up to 3 times
           for i in {1..3}; do
             echo "Build attempt $i"
-            if ./gradlew build --refresh-dependencies --no-daemon; then
+            if ./gradlew build --refresh-dependencies --no-daemon --stacktrace; then
               echo "Build succeeded on attempt $i"
               break
             else
@@ -54,8 +57,10 @@ jobs:
                 exit 1
               fi
               echo "Cleaning cache and retrying..."
-              rm -rf ~/.gradle/caches/forge_gradle/mcp_repo || true
-              sleep 10
+              rm -rf ~/.gradle/caches/forge_gradle || true
+              rm -rf ~/.gradle/caches/minecraft || true
+              rm -rf ~/.gradle/caches/modules-2 || true
+              sleep 15
             fi
           done
       - name: Upload JAR artifacts
