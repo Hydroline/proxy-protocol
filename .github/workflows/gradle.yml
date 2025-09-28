@@ -34,12 +34,12 @@ jobs:
         with:
           java-version: "8"
           distribution: "temurin"
+      - name: Override Java home for Gradle
+        run: echo "org.gradle.java.home=$JAVA_HOME" > gradle-ci.properties
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
-        env:
-          GRADLE_OPTS: "-Dorg.gradle.java.home=$JAVA_HOME"
       - name: Upload JAR artifacts
         uses: actions/upload-artifact@v4
         with:
