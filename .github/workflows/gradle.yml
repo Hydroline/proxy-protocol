@@ -9,32 +9,38 @@ name: Java CI with Gradle
 
 on:
   push:
+    paths-ignore:
+      - "**.md"
+      - "**.txt"
+      - "docs/**"
   pull_request:
+    paths-ignore:
+      - "**.md"
+      - "**.txt"
+      - "docs/**"
 
 permissions:
   contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
+          java-version: "17"
+          distribution: "temurin"
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
-      - name: Publish
-        uses: actions/upload-artifact@v3
+      - name: Upload JAR artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: Build
-          path: build/libs/
+          name: proxy-protocol-support-1.18.2
+          path: build/libs/*.jar
+          if-no-files-found: error
