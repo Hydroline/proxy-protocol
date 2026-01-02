@@ -11,6 +11,14 @@ buildscript {
     }
 }
 
+plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
+import org.gradle.api.file.DuplicatesStrategy
+
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
@@ -102,6 +110,12 @@ mixin {
     config "proxy_protocol_support.mixins.json"
 }
 
+configurations {
+    nettyCodecHaproxy
+}
+
+configurations.implementation.extendsFrom(configurations.nettyCodecHaproxy)
+
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
@@ -118,10 +132,22 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.20.1-47.4.9'
 
-    implementation('io.netty:netty-codec-haproxy:4.1.91.Final')
+    nettyCodecHaproxy('io.netty:netty-codec-haproxy:4.1.91.Final') {
+        transitive = false
+    }
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
+
+shadowJar {
+    configurations = [project.configurations.nettyCodecHaproxy]
+    archiveClassifier.set('shadow')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    exclude('module-info.class')
+    exclude('META-INF/versions/**/module-info.class')
+}
+
+def shadowJarTaskProvider = tasks.named('shadowJar', ShadowJar)
 
 jar {
     manifest {
@@ -135,9 +161,21 @@ jar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn(shadowJarTaskProvider)
+    from {
+        zipTree(shadowJarTaskProvider.flatMap { it.archiveFile })
+    }
 }
 
 jar.finalizedBy('reobfJar')
+
+tasks.withType(RenameJarInPlace).matching {
+    it.name == 'reobfJar'
+}.configureEach {
+    dependsOn(shadowJarTaskProvider)
+    input.set(shadowJarTaskProvider.flatMap { it.archiveFile })
+}
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
