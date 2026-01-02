@@ -24,8 +24,19 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
+def loadProxyProtocolVersion(String forgeVersion, String fallbackVersion) {
+    def sharedVersionScript = rootDir.parentFile ? new File(rootDir.parentFile, 'shared-version.gradle') : null
+    if (sharedVersionScript?.exists()) {
+        apply from: sharedVersionScript
+        if (hasProperty('resolveProxyProtocolVersion')) {
+            return resolveProxyProtocolVersion(forgeVersion)
+        }
+    }
+    return fallbackVersion
+}
+
 group = 'com.hydroline.proxy.protocol'
-version = '1.2.0-forge-1.20.1'
+version = loadProxyProtocolVersion('1.20.1', '2.0.0-forge-1.20.1')
 
 archivesBaseName = 'proxy-protocol'
 

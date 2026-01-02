@@ -1,0 +1,25 @@
+import java.util.Properties
+
+def versionPropertyName = 'proxyProtocolVersion'
+def defaultProxyVersion = '2.0.0'
+def parentProjectDir = rootDir.parentFile
+def versionCache
+
+def resolveBaseVersion = {
+    if (versionCache) {
+        return versionCache
+    }
+    def resolved = defaultProxyVersion
+    def parentPropertiesFile = parentProjectDir ? new File(parentProjectDir, 'gradle.properties') : null
+    if (parentPropertiesFile?.exists()) {
+        def props = new Properties()
+        parentPropertiesFile.withInputStream { stream -> props.load(stream) }
+        resolved = props.getProperty(versionPropertyName, resolved)
+    }
+    versionCache = resolved
+    resolved
+}
+
+ext.resolveProxyProtocolVersion = { String forgeVersion ->
+    "${resolveBaseVersion()}-forge-${forgeVersion}"
+}

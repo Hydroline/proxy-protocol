@@ -23,4 +23,29 @@
 - 根目录的 `./gradlew buildAllTargets` 可用于一次性生成所有版本；它会根据版本选择 Java 8/17，也可以通过设置 `JAVA_HOME_8`/`JAVA_HOME_17` 来覆盖。
 - 如果只想单独构建某个版本：进入 `forge-1.xx` 目录执行 `./gradlew build`，每个子工程会自动加载父级 `proxy-properties.gradle`，复用统一的代理设置。
 - 代理配置集中在根目录的 `gradle.properties`；CI 和子模块启动前都会设置这些 `systemProp.*`，无需在每个子工程重复写，运行时配置会保存为 `proxy-protocol.json`。
+
+## 配置文件
+
+本模组会在服务器启动目录（即 `mods/`、启动 `jar` 同级）查找 `proxy-protocol.json`，并根据 `com.hydroline.proxy.protocol.shared.config.Config` 中的字段初始化行为，放在运行目录即可自动被读取。
+
+- `enable-proxy-protocol`（布尔）：是否启用 Proxy Protocol 解析，默认 `false`。
+- `proxy-protocol-whitelisted-ips`（CIDR 数组）：允许通过 Proxy Protocol 的地址，默认包含 `127.0.0.1/32` 和 `::1/128`。
+- `whitelistTCPShieldServers`（布尔）：开启后会把 TCPShield 官方白名单合并进去。
+- `allow-direct-connections`（布尔）：即便启用了白名单，也允许直连玩家进入服务器。
+- `whitelist-mode`（布尔）：开启后只能让白名单中的 IP 使用 Proxy Protocol。
+- `debug-mode`（布尔）：打印初始化与白名单处理的调试日志。
+
+示例（示例 IP 请替换为你自行控制的代理 IP 或在无固定 IP 时清空数组）：
+
+```json
+{
+  "enable-proxy-protocol": true,
+  "proxy-protocol-whitelisted-ips": ["192.0.2.1/32"],
+  "whitelistTCPShieldServers": false,
+  "allow-direct-connections": true,
+  "whitelist-mode": false,
+  "debug-mode": true
+}
+```
+
 - GitHub Actions 仅按版本逐个运行构建，每个 job 上传 `proxy-protocol-<version>` 产物。
