@@ -1,0 +1,78 @@
+import java.util.Locale
+
+def isWindows = System.getProperty('os.name').toLowerCase(Locale.US).contains('windows')
+
+def gradlewCommand = { List<String> args ->
+    if (isWindows) {
+        ['cmd', '/c', 'gradlew.bat'] + args
+    } else {
+        ['./gradlew'] + args
+    }
+}
+
+ext.javaHomeCandidates = [
+    '8': [
+        '/usr/lib/jvm/java-8-openjdk-amd64',
+        '/usr/lib/jvm/java-1.8.0-openjdk-amd64',
+        '/mnt/c/Program Files/Java/jre1.8.0_361',
+        '/mnt/c/Program Files/Java/jre1.8.0_321',
+        '/mnt/c/Program Files/Java/jdk1.8.0_361'
+    ],
+    '17': [
+        '/usr/lib/jvm/java-17-openjdk-amd64',
+        '/usr/lib/jvm/java-1.17.0-openjdk-amd64',
+        '/usr/lib/jvm/openjdk-17',
+        '/mnt/c/Program Files/Eclipse Adoptium/jdk-17.0.5.8-hotspot',
+        '/mnt/c/Program Files/Java/jdk-17'
+    ]
+]
+
+def resolveJavaHome(String version) {
+    def major = version.tokenize('.')[0]
+    def sanitized = version.replaceAll('[^A-Za-z0-9]', '_')
+    def candidates = [
+        "JAVA_HOME_${sanitized}",
+        "JAVA_HOME_${version}",
+        "JAVA_HOME_${major}",
+        'JAVA_HOME'
+    ]
+
+    candidates.each { key ->
+        def resolved = System.getenv(key)
+        if (resolved && file(resolved).exists()) {
+            return resolved
+        }
+    }
+
+    def lookupKey = (major == '1' && version.tokenize('.').size() > 1) ? version.tokenize('.')[1] : major
+    project.ext.javaHomeCandidates[lookupKey]?.find {
+        file(it).exists()
+    }
+}
+
+def forgeTargets = [
+    [id: '1.16.5', dir: 'forge-1.16.5', javaVersion: '8'],
+    [id: '1.18.2', dir: 'forge-1.18.2', javaVersion: '17'],
+    [id: '1.20.1', dir: 'forge-1.20.1', javaVersion: '17']
+]
+
+forgeTargets.each { target ->
+    def taskName = "buildForge${target.id.replaceAll('[^A-Za-z0-9]', '')}"
+    def javaHome = resolveJavaHome(target.javaVersion)
+
+    tasks.register(taskName, Exec) {
+        group = 'build'
+        description = "构建 Forge ${target.id} 版本"
+        workingDir = file(target.dir)
+        if (javaHome) {
+            environment 'JAVA_HOME', javaHome
+        }
+        commandLine = gradlewCommand(['build'])
+    }
+}
+
+tasks.register('buildAllTargets') {
+    group = 'build'
+    description = '依次构建所有 Forge 目标'
+    dependsOn forgeTargets.collect { "buildForge${it.id.replaceAll('[^A-Za-z0-9]', '')}" }
+}

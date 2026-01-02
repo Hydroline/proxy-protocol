@@ -1,0 +1,6 @@
+def sharedProxyScript = rootDir.parentFile ? new File(rootDir.parentFile, 'proxy-properties.gradle') : null
+if (sharedProxyScript?.exists()) {
+    apply from: sharedProxyScript
+}
+
+rootProject.name = 'proxy_protocol_support'

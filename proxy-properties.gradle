@@ -1,0 +1,18 @@
+import java.util.Properties
+
+if (rootDir.parentFile?.isDirectory()) {
+    def sharedPropertiesFile = new File(rootDir.parentFile, 'gradle.properties')
+    if (sharedPropertiesFile.exists()) {
+        def sharedProps = new Properties()
+        sharedPropertiesFile.withInputStream { sharedProps.load(it) }
+        sharedProps.each { key, value ->
+            def keyString = key.toString()
+            if (keyString.startsWith('systemProp.')) {
+                def systemKey = keyString - 'systemProp.'
+                if (!System.getProperty(systemKey)) {
+                    System.setProperty(systemKey, value.toString())
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,46 @@
+name: Build Forge Targets
+
+on:
+  push:
+    paths-ignore:
+      - "**/*.md"
+  pull_request:
+    paths-ignore:
+      - "**/*.md"
+  workflow_dispatch:
+
+jobs:
+  build-target:
+    name: Build Forge ${{ matrix.version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - version: "1.16.5"
+            path: forge-1.16.5
+            java: "8"
+          - version: "1.18.2"
+            path: forge-1.18.2
+            java: "17"
+          - version: "1.20.1"
+            path: forge-1.20.1
+            java: "17"
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - name: Prepare mcp cache path
+        if: matrix.version == '1.16.5'
+        run: mkdir -p ~/.gradle/caches/forge_gradle/minecraft_user_repo/de/oceanlabs/mcp/mcp_config/1.16.5-20210115.111550
+      - name: Build Forge ${{ matrix.version }}
+        working-directory: ${{ matrix.path }}
+        run: ./gradlew build
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: proxy-protocol-${{ matrix.version }}
+          path: ${{ matrix.path }}/build/libs/**/*.jar
