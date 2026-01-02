@@ -3,4 +3,4 @@ if (sharedProxyScript?.exists()) {
     apply from: sharedProxyScript
 }
 
-rootProject.name = 'proxy_protocol_support'
+rootProject.name = 'proxy_protocol'

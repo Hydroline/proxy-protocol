@@ -24,10 +24,10 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
-group = 'pl.panszelescik'
+group = 'com.hydroline.proxy.protocol'
 version = '1.2.0-forge-1.20.1'
 
-archivesBaseName = 'proxy_protocol_support'
+archivesBaseName = 'proxy-protocol'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaVersion.VERSION_17
 
@@ -45,10 +45,10 @@ minecraft {
 
             property 'forge.logging.console.level', 'debug'
 
-            property 'forge.enabledGameTestNamespaces', 'proxy_protocol_support'
+            property 'forge.enabledGameTestNamespaces', 'proxy_protocol'
 
             mods {
-                proxy_protocol_support {
+                proxy_protocol {
                     source sourceSets.main
                 }
             }
@@ -61,10 +61,10 @@ minecraft {
 
             property 'forge.logging.console.level', 'debug'
 
-            property 'forge.enabledGameTestNamespaces', 'proxy_protocol_support'
+            property 'forge.enabledGameTestNamespaces', 'proxy_protocol'
 
             mods {
-                proxy_protocol_support {
+                proxy_protocol {
                     source sourceSets.main
                 }
             }
@@ -77,10 +77,10 @@ minecraft {
 
             property 'forge.logging.console.level', 'debug'
 
-            property 'forge.enabledGameTestNamespaces', 'proxy_protocol_support'
+            property 'forge.enabledGameTestNamespaces', 'proxy_protocol'
 
             mods {
-                proxy_protocol_support {
+                proxy_protocol {
                     source sourceSets.main
                 }
             }
@@ -93,10 +93,10 @@ minecraft {
 
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'proxy_protocol_support', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'proxy_protocol', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                proxy_protocol_support {
+                proxy_protocol {
                     source sourceSets.main
                 }
             }
@@ -105,9 +105,9 @@ minecraft {
 }
 
 mixin {
-    add sourceSets.main, "proxy_protocol_support.refmap.json"
+    add sourceSets.main, "proxy_protocol.refmap.json"
 
-    config "proxy_protocol_support.mixins.json"
+    config "proxy_protocol.mixins.json"
 }
 
 configurations {
@@ -152,7 +152,7 @@ def shadowJarTaskProvider = tasks.named('shadowJar', ShadowJar)
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "proxy_protocol_support",
+                "Specification-Title"     : "proxy_protocol",
                 "Specification-Vendor"    : "PanSzelescik",
                 "Specification-Version"   : "1",
                 "Implementation-Title"    : project.name,

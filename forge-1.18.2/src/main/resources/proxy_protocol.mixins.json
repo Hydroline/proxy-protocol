@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.hydroline.proxy.protocol.shared.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "server": [
+    "ChannelInitializerInvoker",
+    "ProxyProtocolAddressSetter",
+    "ProxyProtocolImplementation"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "proxy_protocol.refmap.json"
+}

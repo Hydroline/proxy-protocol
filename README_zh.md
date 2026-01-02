@@ -1,10 +1,10 @@
-# Proxy Protocol Support
+# proxy-protocol
 
 > [英文](README.md)
 
 本项目基于 [PanSzelescik/proxy-protocol-support](https://github.com/PanSzelescik/proxy-protocol-support)。
 
-**Proxy Protocol Support** 是一个 **Forge 模组**，用于在 Minecraft 服务器部署在 **HAProxy / TCPShield / Nginx** 等 TCP 反向代理之后，仍然保留并获取客户端的**真实 IP 地址**。该模组会解析 **Proxy Protocol** 数据包，并将其中的内容暴露给插件使用，使下游代码能够读取客户端原始的 `SocketAddress`，而不是代理服务器的地址。
+**proxy-protocol** 是一个 **Forge 模组**，用于在 Minecraft 服务器部署在 **HAProxy / TCPShield / Nginx** 等 TCP 反向代理之后，仍然保留并获取客户端的**真实 IP 地址**。该模组会解析 **Proxy Protocol** 数据包，并将其中的内容暴露给插件使用，使下游代码能够读取客户端原始的 `SocketAddress`，而不是代理服务器的地址。
 
 例如，你可以使用 **[TCPShield](https://tcpshield.com/)** 或其他软件（如 **[Nginx](https://nginx.org/en/docs/stream/ngx_stream_proxy_module.html#proxy_protocol)**）来转发网络流量，从而隐藏服务器的真实 IP 地址。
 在未启用 Proxy Protocol 的情况下，服务器控制台和插件中只能看到**代理服务器的 IP**；而通过解析并读取 Proxy Protocol 数据包，则可以正确获取并显示玩家的真实 IP 地址。
@@ -22,5 +22,5 @@
 
 - 根目录的 `./gradlew buildAllTargets` 可用于一次性生成所有版本；它会根据版本选择 Java 8/17，也可以通过设置 `JAVA_HOME_8`/`JAVA_HOME_17` 来覆盖。
 - 如果只想单独构建某个版本：进入 `forge-1.xx` 目录执行 `./gradlew build`，每个子工程会自动加载父级 `proxy-properties.gradle`，复用统一的代理设置。
-- 代理配置集中在根目录的 `gradle.properties`；CI 和子模块启动前都会设置这些 `systemProp.*`，无需在每个子工程重复写。
+- 代理配置集中在根目录的 `gradle.properties`；CI 和子模块启动前都会设置这些 `systemProp.*`，无需在每个子工程重复写，运行时配置会保存为 `proxy-protocol.json`。
 - GitHub Actions 仅按版本逐个运行构建，每个 job 上传 `proxy-protocol-<version>` 产物。

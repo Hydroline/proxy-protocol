@@ -1,6 +1,6 @@
 {
   "pack": {
-    "description": "Proxy Protocol Support for Minecraft 1.16.5",
-    "pack_format": 6
+    "description": "proxy-protocol for Minecraft 1.18.2",
+    "pack_format": 10
   }
-} 
+}
