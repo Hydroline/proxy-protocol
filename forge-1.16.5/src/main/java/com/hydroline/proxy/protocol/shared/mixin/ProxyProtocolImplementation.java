@@ -2,8 +2,8 @@ package com.hydroline.proxy.protocol.shared.mixin;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandler;
-import net.minecraft.network.NetworkSystem;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import com.hydroline.proxy.protocol.shared.impl.IChannelInitializer;
@@ -16,7 +16,8 @@ import com.hydroline.proxy.protocol.shared.impl.ProxyProtocolFallbackInitializer
  * @author PanSzelescik
  * @see ProxyProtocolChannelInitializer
  */
-@Mixin(NetworkSystem.class)
+@Pseudo
+@Mixin(targets = "net.minecraft.server.network.ServerConnectionListener", remap = false)
 public class ProxyProtocolImplementation {
 
     @Redirect(method = "startTcpServerListener", at = @At(value = "INVOKE", target = "Lio/netty/bootstrap/ServerBootstrap;childHandler(Lio/netty/channel/ChannelHandler;)Lio/netty/bootstrap/ServerBootstrap;", remap = false))
