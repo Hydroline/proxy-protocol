@@ -1,6 +1,6 @@
 # proxy-protocol
 
-> [英文](README.md)
+> [English](README.md)
 
 本项目基于 [PanSzelescik/proxy-protocol-support](https://github.com/PanSzelescik/proxy-protocol-support)。
 
