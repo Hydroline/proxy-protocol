@@ -89,28 +89,43 @@ public class ProxyProtocolSupport {
     }
 
     private static void loggerInitialize() {
-        try {
-            org.slf4j.Logger slf4j = org.slf4j.LoggerFactory.getLogger(MODID);
-            infoLogger = message -> slf4j.info(LOG_PREFIX + message);
-            warnLogger = message -> slf4j.warn(LOG_PREFIX + message);
-            errorLogger = message -> slf4j.error(LOG_PREFIX + message);
-            exceptionLogger = (message, exception) -> slf4j.error(LOG_PREFIX + message, exception);
-        } catch (Throwable ignored) {
+        if (hasSlf4jBinding()) {
             try {
-                org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger(MODID);
-                infoLogger = message -> log4j.info(LOG_PREFIX + message);
-                warnLogger = message -> log4j.warn(LOG_PREFIX + message);
-                errorLogger = message -> log4j.error(LOG_PREFIX + message);
-                exceptionLogger = (message, exception) -> log4j.error(LOG_PREFIX + message, exception);
-            } catch (Throwable ignored2) {
-                infoLogger = message -> System.out.println(LOG_PREFIX + message);
-                warnLogger = message -> System.out.println(LOG_PREFIX + message);
-                errorLogger = message -> System.out.println(LOG_PREFIX + message);
-                exceptionLogger = (message, exception) -> {
-                    System.out.println(LOG_PREFIX + message);
-                    exception.printStackTrace();
-                };
+                org.slf4j.Logger slf4j = org.slf4j.LoggerFactory.getLogger(MODID);
+                infoLogger = message -> slf4j.info(LOG_PREFIX + message);
+                warnLogger = message -> slf4j.warn(LOG_PREFIX + message);
+                errorLogger = message -> slf4j.error(LOG_PREFIX + message);
+                exceptionLogger = (message, exception) -> slf4j.error(LOG_PREFIX + message, exception);
+                return;
+            } catch (Throwable ignored) {
+                // fall through to log4j fallback below
             }
+        }
+
+        try {
+            org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger(MODID);
+            infoLogger = message -> log4j.info(LOG_PREFIX + message);
+            warnLogger = message -> log4j.warn(LOG_PREFIX + message);
+            errorLogger = message -> log4j.error(LOG_PREFIX + message);
+            exceptionLogger = (message, exception) -> log4j.error(LOG_PREFIX + message, exception);
+            return;
+        } catch (Throwable ignored2) {
+            infoLogger = message -> System.out.println(LOG_PREFIX + message);
+            warnLogger = message -> System.out.println(LOG_PREFIX + message);
+            errorLogger = message -> System.out.println(LOG_PREFIX + message);
+            exceptionLogger = (message, exception) -> {
+                System.out.println(LOG_PREFIX + message);
+                exception.printStackTrace();
+            };
+        }
+    }
+
+    private static boolean hasSlf4jBinding() {
+        try {
+            Class.forName("org.slf4j.impl.StaticLoggerBinder");
+            return true;
+        } catch (ClassNotFoundException ignored) {
+            return false;
         }
     }
 }
